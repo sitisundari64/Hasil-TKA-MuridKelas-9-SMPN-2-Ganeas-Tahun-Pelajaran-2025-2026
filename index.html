@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard TKA — SMPN 2 Ganeas 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #0B1D3A;
+    --navy2:  #132444;
+    --navy3:  #1A2F55;
+    --blue:   #1D6FE8;
+    --blue2:  #2F80F5;
+    --sky:    #38BDF8;
+    --cyan:   #06B6D4;
+    --teal:   #0D9488;
+    --green:  #22C55E;
+    --amber:  #F59E0B;
+    --red:    #EF4444;
+    --gold:   #EAB308;
+    --white:  #FFFFFF;
+    --gray50: #F8FAFC;
+    --gray100:#F1F5F9;
+    --gray200:#E2E8F0;
+    --gray300:#CBD5E1;
+    --gray400:#94A3B8;
+    --gray500:#64748B;
+    --gray600:#475569;
+    --gray700:#334155;
+    --gray800:#1E293B;
+    --gray900:#0F172A;
+    --card-bg: #ffffff;
+    --card-border: rgba(30,41,59,0.08);
+    --surface: #F8FAFC;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ───── SIDEBAR ───── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--blue2), var(--sky));
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .logo-text { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; }
+  .logo-sub  { font-size: 10px; color: rgba(255,255,255,0.45); font-weight: 400; }
+  .sidebar-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(29,111,232,0.18); color: var(--sky);
+    font-size: 10px; font-weight: 600; padding: 3px 8px;
+    border-radius: 20px; border: 1px solid rgba(56,189,248,0.25);
+    margin-top: 10px; letter-spacing: 0.04em;
+  }
+  .sidebar-nav { padding: 12px 12px; flex: 1; }
+  .nav-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3); text-transform: uppercase;
+    padding: 8px 8px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: var(--radius-sm);
+    cursor: pointer; color: rgba(255,255,255,0.55);
+    font-size: 13px; font-weight: 500;
+    transition: all .18s ease;
+    margin-bottom: 2px;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-item.active {
+    background: linear-gradient(90deg, rgba(29,111,232,0.35), rgba(29,111,232,0.12));
+    color: #fff;
+    border-left: 2px solid var(--blue2);
+  }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .sidebar-footer {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 10px; color: rgba(255,255,255,0.3);
+    line-height: 1.6;
+  }
+
+  /* ───── MAIN ───── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray200);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+  .topbar-sub   { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .topbar-right { display: flex; gap: 10px; align-items: center; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--gray100); color: var(--gray600);
+    border: 1px solid var(--gray200); border-radius: 20px;
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+  }
+  .chip.blue { background: rgba(29,111,232,0.08); color: var(--blue); border-color: rgba(29,111,232,0.2); }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  .content { padding: 24px 28px; flex: 1; overflow-y: auto; }
+
+  /* ───── PANELS ───── */
+  .panel { display: none; animation: fadeIn .25s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+  /* ───── METRIC CARDS ───── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .metric-card {
+    background: var(--white);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .metric-card:hover { box-shadow: var(--shadow-md); }
+  .metric-accent {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .metric-icon {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; margin-bottom: 12px;
+  }
+  .metric-value { font-size: 26px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+  .metric-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
+  .metric-sub   { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+  .metric-delta {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 600; padding: 2px 6px;
+    border-radius: 6px; margin-top: 6px;
+  }
+  .delta-good { background: rgba(34,197,94,0.12); color: #15803D; }
+  .delta-warn { background: rgba(239,68,68,0.10); color: #DC2626; }
+  .delta-info { background: rgba(29,111,232,0.10); color: var(--blue); }
+
+  /* ───── CHART CARDS ───── */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .chart-card {
+    background: var(--white); border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg); padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+  .chart-title  { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .chart-sub    { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .legend-row   { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+  .legend-item  { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+  .legend-sq    { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .chart-wrap   { position: relative; width: 100%; }
+
+  /* ───── BADGE ───── */
+  .badge {
+    display: inline-flex; align-items: center;
+    font-size: 11px; font-weight: 700; padding: 2px 9px;
+    border-radius: 20px; letter-spacing: 0.02em;
+  }
+  .badge-baik    { background: rgba(13,148,136,0.12); color: #0F766E; border: 1px solid rgba(13,148,136,0.25); }
+  .badge-memadai { background: rgba(29,111,232,0.10); color: #1D4ED8; border: 1px solid rgba(29,111,232,0.2); }
+  .badge-kurang  { background: rgba(239,68,68,0.10); color: #DC2626; border: 1px solid rgba(239,68,68,0.2); }
+
+  /* ───── FILTER ROW ───── */
+  .filter-row {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    background: var(--white); border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+    margin-bottom: 16px; box-shadow: var(--shadow-sm);
+  }
+  .filter-row input,
+  .filter-row select {
+    height: 36px; font-size: 13px; padding: 0 12px;
+    border: 1px solid var(--gray200); border-radius: var(--radius-sm);
+    background: var(--gray50); color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .filter-row input:focus,
+  .filter-row select:focus {
+    border-color: var(--blue2);
+    box-shadow: 0 0 0 3px rgba(29,111,232,0.12);
+    background: #fff;
+  }
+  .filter-row input { flex: 1; min-width: 180px; }
+  .filter-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+  .filter-count {
+    margin-left: auto; font-size: 12px; font-weight: 600;
+    color: var(--blue); background: rgba(29,111,232,0.09);
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  /* ── NAME SEARCH WRAPPER (autocomplete) ── */
+  .search-wrap { position: relative; flex: 1; min-width: 220px; }
+  .search-wrap input { width: 100%; padding-left: 36px !important; }
+  .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); pointer-events: none;
+    display: flex; align-items: center;
+  }
+  .search-clear {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: var(--gray200); border: none; cursor: pointer;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--gray600); line-height: 1;
+    transition: background .15s;
+  }
+  .search-clear:hover { background: var(--gray300); }
+  .search-clear.visible { display: flex; }
+
+  .autocomplete-dropdown {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 200;
+    background: var(--white); border: 1px solid var(--gray200);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+    max-height: 260px; overflow-y: auto; display: none;
+  }
+  .autocomplete-dropdown.open { display: block; }
+  .ac-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px; cursor: pointer; font-size: 13px;
+    color: var(--text-primary); border-bottom: 1px solid var(--gray100);
+    transition: background .1s;
+  }
+  .ac-item:last-child { border-bottom: none; }
+  .ac-item:hover, .ac-item.focused { background: rgba(29,111,232,0.06); }
+  .ac-item mark {
+    background: rgba(29,111,232,0.18); color: var(--blue);
+    border-radius: 3px; padding: 0 2px; font-weight: 700;
+  }
+  .ac-item-scores { margin-left: auto; display: flex; gap: 5px; flex-shrink: 0; }
+  .ac-no { color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 11px; min-width: 22px; }
+  .ac-empty { padding: 14px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+  /* ── GLOBAL TOPBAR SEARCH ── */
+  .topbar-search-wrap { position: relative; }
+  .topbar-search {
+    height: 34px; width: 220px; padding: 0 12px 0 34px;
+    border: 1px solid var(--gray200); border-radius: var(--radius-sm);
+    font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--gray50); color: var(--text-primary);
+    outline: none; transition: all .18s;
+  }
+  .topbar-search:focus {
+    width: 280px; border-color: var(--blue2);
+    box-shadow: 0 0 0 3px rgba(29,111,232,0.12); background: #fff;
+  }
+  .topbar-search-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); pointer-events: none; font-size: 14px;
+  }
+  .topbar-ac {
+    position: absolute; top: calc(100% + 6px); right: 0;
+    width: 340px; z-index: 300;
+    background: var(--white); border: 1px solid var(--gray200);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+    max-height: 320px; overflow-y: auto; display: none;
+  }
+  .topbar-ac.open { display: block; }
+  .topbar-ac-header {
+    padding: 8px 14px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); border-bottom: 1px solid var(--gray100);
+    background: var(--gray50);
+  }
+  .topbar-ac-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; cursor: pointer; font-size: 13px;
+    color: var(--text-primary); border-bottom: 1px solid var(--gray100);
+    transition: background .1s;
+  }
+  .topbar-ac-item:last-child { border-bottom: none; }
+  .topbar-ac-item:hover { background: rgba(29,111,232,0.06); }
+  .topbar-ac-item mark { background: rgba(29,111,232,0.18); color: var(--blue); border-radius: 3px; padding: 0 2px; font-weight: 700; }
+  .topbar-ac-scores { margin-left: auto; display: flex; gap: 5px; flex-shrink: 0; }
+  .tac-pill { font-family: 'DM Mono',monospace; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 5px; }
+  .tac-mat { background: rgba(29,111,232,0.1); color: var(--blue); }
+  .tac-bi  { background: rgba(13,148,136,0.1); color: var(--teal); }
+
+  /* ── HIGHLIGHT IN TABLE ── */
+  mark.hl { background: rgba(29,111,232,0.18); color: var(--blue); border-radius: 3px; padding: 0 2px; font-weight: 700; }
+
+  /* ── STUDENT DETAIL CARD ── */
+  .detail-overlay {
+    position: fixed; inset: 0; background: rgba(11,29,58,0.45);
+    z-index: 500; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .detail-overlay.open { display: flex; }
+  .detail-card {
+    background: var(--white); border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg); width: 420px; max-width: 95vw;
+    padding: 28px; position: relative; animation: popIn .2s ease;
+  }
+  @keyframes popIn { from { transform: scale(0.94); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .detail-close {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--gray100); border: none; cursor: pointer;
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--gray600); transition: background .15s;
+  }
+  .detail-close:hover { background: var(--gray200); }
+  .detail-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg,#1D6FE8,#0D9488);
+    margin-bottom: 12px; flex-shrink: 0;
+  }
+  .detail-name { font-size: 17px; font-weight: 800; color: var(--navy); }
+  .detail-sub  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .detail-scores {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; margin: 18px 0;
+  }
+  .detail-score-box {
+    background: var(--gray50); border: 1px solid var(--gray200);
+    border-radius: var(--radius-md); padding: 12px 10px; text-align: center;
+  }
+  .detail-score-val { font-size: 24px; font-weight: 800; }
+  .detail-score-lbl { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .detail-bar-row { margin-bottom: 10px; }
+  .detail-bar-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+  .detail-bar-track { height: 8px; background: var(--gray100); border-radius: 99px; overflow: hidden; }
+  .detail-bar-fill  { height: 100%; border-radius: 99px; transition: width .4s ease; }
+
+  /* ───── TABLE ───── */
+  .table-wrap {
+    background: var(--white); border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .table-inner { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--navy); }
+  th {
+    padding: 11px 14px; text-align: left;
+    color: rgba(255,255,255,0.75); font-weight: 600; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    white-space: nowrap; cursor: pointer; user-select: none;
+  }
+  th:hover { color: #fff; }
+  th .sort-arrow { color: rgba(255,255,255,0.35); font-size: 10px; margin-left: 3px; }
+  tbody tr { border-bottom: 1px solid var(--gray100); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(29,111,232,0.03); }
+  td { padding: 10px 14px; color: var(--text-primary); white-space: nowrap; }
+  td.name-cell { font-weight: 600; max-width: 220px; white-space: normal; line-height: 1.4; }
+  .no-cell { color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 12px; }
+  .score-cell { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+  .avg-cell { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: var(--navy); }
+  .score-bar {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .score-bar-track {
+    flex: 1; height: 5px; background: var(--gray100);
+    border-radius: 99px; overflow: hidden; min-width: 40px;
+  }
+  .score-bar-fill { height: 100%; border-radius: 99px; }
+
+  .no-data {
+    text-align: center; padding: 40px 20px;
+    color: var(--text-muted); font-size: 13px;
+  }
+
+  /* ───── INSIGHT CARDS ───── */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .insight-card {
+    background: var(--white); border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg); padding: 18px 20px;
+    box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px;
+    border-left: 3px solid transparent;
+    transition: box-shadow .2s;
+  }
+  .insight-card:hover { box-shadow: var(--shadow-md); }
+  .insight-header { display: flex; align-items: flex-start; gap: 12px; }
+  .insight-icon-wrap {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .insight-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; }
+  .insight-title { font-size: 13px; font-weight: 700; color: var(--text-primary); line-height: 1.4; }
+  .insight-body { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+  .insight-card.danger { border-left-color: var(--red); }
+  .insight-card.success { border-left-color: var(--teal); }
+  .insight-card.warning { border-left-color: var(--amber); }
+  .insight-card.info    { border-left-color: var(--blue2); }
+  .insight-card.purple  { border-left-color: #8B5CF6; }
+  .insight-card.full    { grid-column: 1 / -1; }
+
+  /* ───── SECTION HEADING ───── */
+  .section-heading {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-heading::after { content: ''; flex: 1; height: 1px; background: var(--gray200); }
+
+  /* ───── RANK BADGE ───── */
+  .rank-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    font-size: 11px; font-weight: 700; font-family: 'DM Mono', monospace;
+  }
+  .r1 { background: linear-gradient(135deg,#EAB308,#F59E0B); color: #7C2D12; }
+  .r2 { background: var(--gray200); color: var(--gray700); }
+  .r3 { background: rgba(239,68,68,0.15); color: #9F1239; }
+  .rn { background: var(--gray100); color: var(--gray500); }
+
+  /* ───── MINI STAT ROW (overview top performers) ───── */
+  .performer-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: var(--radius-sm);
+    background: var(--gray50); margin-bottom: 6px;
+    border: 1px solid var(--gray100);
+    transition: background .15s;
+  }
+  .performer-row:hover { background: rgba(29,111,232,0.05); }
+  .performer-name { font-weight: 600; font-size: 13px; flex: 1; color: var(--text-primary); }
+  .performer-scores { display: flex; gap: 6px; }
+  .score-pill {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .sp-mat { background: rgba(29,111,232,0.10); color: var(--blue); }
+  .sp-bi  { background: rgba(13,148,136,0.10); color: var(--teal); }
+  .sp-avg { background: var(--navy); color: rgba(255,255,255,0.85); font-weight: 700; }
+
+  /* ───── RESPONSIVE ───── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .insight-grid { grid-template-columns: 1fr; }
+    .content { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">📊</div>
+      <div>
+        <div class="logo-text">Dashboard TKA</div>
+        <div class="logo-sub">SMPN 2 Ganeas</div>
+      </div>
+    </div>
+    <div class="sidebar-badge">● Tahun Pelajaran 2025/2026</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <button class="nav-item active" onclick="switchPanel('overview',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Ikhtisar
+    </button>
+    <button class="nav-item" onclick="switchPanel('students',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Data Siswa
+    </button>
+    <button class="nav-item" onclick="switchPanel('charts',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Grafik Analitik
+    </button>
+    <button class="nav-item" onclick="switchPanel('insights',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Insight & Rekomendasi
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    Dicetak dari tka.kemendikdasmen.go.id<br>
+    26 Mei 2026 · NPSN 20235600<br>
+    Kepala Sekolah: Siti Sundari, M.Pd.
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div>
+      <div class="topbar-title">Tes Kemampuan Akademik — Kelas 9</div>
+      <div class="topbar-sub">Kabupaten Sumedang, Jawa Barat · Tahun 2026</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search-wrap" id="topbarSearchWrap">
+        <span class="topbar-search-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input type="text" class="topbar-search" id="topbarSearch" placeholder="Cari nama siswa..." autocomplete="off"
+          oninput="topbarSearchHandler()" onkeydown="topbarKeydown(event)" onfocus="topbarSearchHandler()">
+        <div class="topbar-ac" id="topbarAc"></div>
+      </div>
+      <span class="chip"><span class="chip-dot"></span>71 Peserta</span>
+      <span class="chip blue">Matematika · Bahasa Indonesia</span>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- ═══ OVERVIEW PANEL ═══ -->
+    <div id="panel-overview" class="panel active">
+
+      <div class="section-heading">Ringkasan Statistik</div>
+      <div class="metrics-grid" id="metrics-grid"></div>
+
+      <div class="section-heading">Distribusi Capaian & Top Performers</div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Distribusi Matematika</div>
+              <div class="chart-sub">Kategori capaian seluruh peserta</div>
+            </div>
+          </div>
+          <div class="legend-row">
+            <span class="legend-item"><span class="legend-sq" style="background:#0D9488"></span>Baik</span>
+            <span class="legend-item"><span class="legend-sq" style="background:#1D6FE8"></span>Memadai</span>
+            <span class="legend-item"><span class="legend-sq" style="background:#EF4444"></span>Kurang</span>
+          </div>
+          <div class="chart-wrap" style="height:200px"><canvas id="chartMatDist" role="img" aria-label="Distribusi kategori Matematika">Baik, Memadai, Kurang</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Distribusi Bahasa Indonesia</div>
+              <div class="chart-sub">Kategori capaian seluruh peserta</div>
+            </div>
+          </div>
+          <div class="legend-row">
+            <span class="legend-item"><span class="legend-sq" style="background:#0D9488"></span>Baik</span>
+            <span class="legend-item"><span class="legend-sq" style="background:#1D6FE8"></span>Memadai</span>
+            <span class="legend-item"><span class="legend-sq" style="background:#EF4444"></span>Kurang</span>
+          </div>
+          <div class="chart-wrap" style="height:200px"><canvas id="chartBIDist" role="img" aria-label="Distribusi kategori Bahasa Indonesia">Baik, Memadai, Kurang</canvas></div>
+        </div>
+        <div class="chart-card full">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Top 10 Siswa — Rata-rata Nilai Tertinggi</div>
+              <div class="chart-sub">Berdasarkan rata-rata Matematika + Bahasa Indonesia</div>
+            </div>
+          </div>
+          <div class="legend-row">
+            <span class="legend-item"><span class="legend-sq" style="background:#1D6FE8"></span>Matematika</span>
+            <span class="legend-item"><span class="legend-sq" style="background:#0D9488"></span>Bahasa Indonesia</span>
+          </div>
+          <div class="chart-wrap" style="height:260px"><canvas id="chartTop10" role="img" aria-label="Top 10 siswa nilai tertinggi">Top 10 siswa</canvas></div>
+        </div>
+      </div>
+
+      <div class="section-heading">Top 10 Peringkat Siswa</div>
+      <div id="performers-list"></div>
+
+    </div>
+
+    <!-- ═══ STUDENTS PANEL ═══ -->
+    <div id="panel-students" class="panel">
+      <div class="filter-row">
+        <div class="search-wrap" id="searchWrap">
+          <span class="search-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </span>
+          <input type="text" id="searchName" placeholder="Ketik nama siswa..." autocomplete="off"
+            oninput="onSearchInput()" onkeydown="searchKeydown(event)" onfocus="onSearchInput()">
+          <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Hapus pencarian">✕</button>
+          <div class="autocomplete-dropdown" id="acDropdown"></div>
+        </div>
+        <select id="filterKatMat" onchange="renderTable()">
+          <option value="">Semua — Kategori Mat</option>
+          <option value="Baik">Mat: Baik</option>
+          <option value="Memadai">Mat: Memadai</option>
+          <option value="Kurang">Mat: Kurang</option>
+        </select>
+        <select id="filterKatBI" onchange="renderTable()">
+          <option value="">Semua — Kategori BI</option>
+          <option value="Baik">BI: Baik</option>
+          <option value="Memadai">BI: Memadai</option>
+          <option value="Kurang">BI: Kurang</option>
+        </select>
+        <select id="sortBy" onchange="renderTable()">
+          <option value="no">Urut: No</option>
+          <option value="nama">Urut: Nama A–Z</option>
+          <option value="mat_desc">Mat ↓ Tertinggi</option>
+          <option value="mat_asc">Mat ↑ Terendah</option>
+          <option value="bi_desc">BI ↓ Tertinggi</option>
+          <option value="bi_asc">BI ↑ Terendah</option>
+          <option value="avg_desc">Rata-rata ↓</option>
+          <option value="avg_asc">Rata-rata ↑</option>
+        </select>
+        <button onclick="resetAllFilters()" style="height:36px;padding:0 14px;border-radius:var(--radius-sm);border:1px solid var(--gray200);background:var(--gray50);font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='var(--gray100)'" onmouseout="this.style.background='var(--gray50)'">Reset</button>
+        <span class="filter-count" id="filter-count">71 siswa</span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-inner">
+          <table>
+            <thead><tr>
+              <th onclick="setSortBy('no')"># <span class="sort-arrow">↕</span></th>
+              <th onclick="setSortBy('nama')">Nama Siswa <span class="sort-arrow">↕</span></th>
+              <th onclick="setSortBy('mat_desc')">Matematika <span class="sort-arrow">↕</span></th>
+              <th>Kat. Mat</th>
+              <th onclick="setSortBy('bi_desc')">Bahasa Indonesia <span class="sort-arrow">↕</span></th>
+              <th>Kat. BI</th>
+              <th onclick="setSortBy('avg_desc')">Rata-rata <span class="sort-arrow">↕</span></th>
+            </tr></thead>
+            <tbody id="student-tbody"></tbody>
+          </table>
+          <div id="no-data" class="no-data" style="display:none">
+            <div style="font-size:28px;margin-bottom:8px">🔍</div>
+            Tidak ada siswa yang cocok dengan pencarian "<span id="no-data-query" style="color:var(--blue);font-weight:600"></span>"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DETAIL OVERLAY ═══ -->
+    <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+      <div class="detail-card" id="detailCard"></div>
+    </div>
+
+    <!-- ═══ CHARTS PANEL ═══ -->
+    <div id="panel-charts" class="panel">
+      <div class="section-heading">Grafik Perbandingan & Sebaran</div>
+      <div class="charts-grid">
+        <div class="chart-card full">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Nilai Matematika vs Bahasa Indonesia — Seluruh Siswa</div>
+              <div class="chart-sub">Perbandingan nilai dua mata pelajaran per nomor peserta</div>
+            </div>
+          </div>
+          <div class="legend-row">
+            <span class="legend-item"><span class="legend-sq" style="background:#1D6FE8"></span>Matematika</span>
+            <span class="legend-item"><span class="legend-sq" style="background:#0D9488; border-left:3px dashed #0D9488; background:none; width:16px; height:2px; border-radius:0"></span>Bahasa Indonesia</span>
+          </div>
+          <div class="chart-wrap" style="height:300px"><canvas id="chartCompare" role="img" aria-label="Nilai dua mapel per siswa">Data nilai</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Scatter — Mat vs BI</div>
+              <div class="chart-sub">Korelasi nilai dua mata pelajaran</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:260px"><canvas id="chartScatter" role="img" aria-label="Scatter Matematika vs Bahasa Indonesia">Scatter plot</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Perbandingan Rata-rata</div>
+              <div class="chart-sub">Matematika vs Bahasa Indonesia</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:260px"><canvas id="chartRadar" role="img" aria-label="Radar statistik">Radar</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Histogram — Matematika</div>
+              <div class="chart-sub">Distribusi frekuensi nilai</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px"><canvas id="chartHistMat" role="img" aria-label="Histogram Matematika">Histogram</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Histogram — Bahasa Indonesia</div>
+              <div class="chart-sub">Distribusi frekuensi nilai</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px"><canvas id="chartHistBI" role="img" aria-label="Histogram Bahasa Indonesia">Histogram</canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ INSIGHTS PANEL ═══ -->
+    <div id="panel-insights" class="panel">
+      <div class="section-heading">Insight & Rekomendasi Strategis</div>
+      <div class="insight-grid" id="insight-grid"></div>
+    </div>
+
+  </main>
+</div><!-- /.main -->
+</div><!-- /.layout -->
+
+<script>
+const raw = [
+  {no:1,nama:"Mochamad Badar Jihad",mat:40.00,bi:43.33},
+  {no:2,nama:"Tiara Anggraeni",mat:40.00,bi:93.33},
+  {no:3,nama:"Riski Hermawan",mat:20.00,bi:53.33},
+  {no:4,nama:"Farhan Saepul Mu'izz",mat:60.00,bi:60.00},
+  {no:5,nama:"Nazwa Cinta Oktapiani",mat:30.00,bi:63.33},
+  {no:6,nama:"Fajar Rijki",mat:46.67,bi:80.00},
+  {no:7,nama:"Vivit Sukaesih",mat:43.33,bi:70.00},
+  {no:8,nama:"Sandi Saputra",mat:43.33,bi:43.33},
+  {no:9,nama:"Lingga Mohamad Alwi",mat:46.67,bi:76.67},
+  {no:10,nama:"Ajeng Susilawati",mat:43.33,bi:70.00},
+  {no:11,nama:"Wawa Awaludin",mat:46.67,bi:46.67},
+  {no:12,nama:"Adhi Ramdhani",mat:46.67,bi:46.67},
+  {no:13,nama:"Raisya Nurrizki",mat:33.33,bi:76.67},
+  {no:14,nama:"Septiani Putri Aeni",mat:30.00,bi:80.00},
+  {no:15,nama:"Nika Musaropah",mat:36.67,bi:70.00},
+  {no:16,nama:"Giovani Askar Padilah",mat:23.33,bi:46.67},
+  {no:17,nama:"Radit Andita Katmana",mat:63.33,bi:33.33},
+  {no:18,nama:"Najah Zahwa Ramadani",mat:56.67,bi:83.33},
+  {no:19,nama:"Keisya Khoirunnisa",mat:46.67,bi:66.67},
+  {no:20,nama:"Ramdhan Hidayatuloh",mat:36.67,bi:66.67},
+  {no:21,nama:"Nisa Rahma Dhiani",mat:26.67,bi:63.33},
+  {no:22,nama:"Rangga Purnama",mat:26.67,bi:43.33},
+  {no:23,nama:"Mochamad Rizal Ramadhan",mat:40.00,bi:53.33},
+  {no:24,nama:"Ahmad Davi Wijaya Kusuma",mat:43.33,bi:56.67},
+  {no:25,nama:"Siska Karina Aprilia",mat:40.00,bi:50.00},
+  {no:26,nama:"Sherin Putri Aini",mat:26.67,bi:46.67},
+  {no:27,nama:"Ahmad Ghani",mat:46.67,bi:43.33},
+  {no:28,nama:"Farah Amanda",mat:40.00,bi:63.33},
+  {no:29,nama:"Isfiana Khaerunnisa",mat:40.00,bi:70.00},
+  {no:30,nama:"Reza Maulana Yusuf",mat:16.67,bi:66.67},
+  {no:31,nama:"Illyas Dwi Putra",mat:40.00,bi:70.00},
+  {no:32,nama:"Putri Novia Khairunnisa",mat:53.33,bi:73.33},
+  {no:33,nama:"Muhamad Kysan",mat:43.33,bi:46.67},
+  {no:34,nama:"Aan Ali Fazri",mat:43.33,bi:43.33},
+  {no:35,nama:"Muhammad Rasya Alkhatiri",mat:56.67,bi:73.33},
+  {no:36,nama:"Cut Natasya Satriani",mat:36.67,bi:50.00},
+  {no:37,nama:"Yuli Milannisa Putri",mat:33.33,bi:63.33},
+  {no:38,nama:"Desy Nur Lucyansyah",mat:43.33,bi:86.67},
+  {no:39,nama:"Fasha Taufik Ramdan",mat:36.67,bi:76.67},
+  {no:40,nama:"Kurniawan Juliana",mat:36.67,bi:26.67},
+  {no:41,nama:"Rafa Ibnu Akbar",mat:33.33,bi:43.33},
+  {no:42,nama:"Azis Fadillah Maulana",mat:63.33,bi:46.67},
+  {no:43,nama:"Tubagus Heryanto",mat:43.33,bi:23.33},
+  {no:44,nama:"Syakira Khanza Aulia",mat:60.00,bi:83.33},
+  {no:45,nama:"Silsi Rosyida",mat:33.33,bi:46.67},
+  {no:46,nama:"Muhamad Khoerul Azmi",mat:43.33,bi:56.67},
+  {no:47,nama:"Doni Yudiansyah",mat:23.33,bi:30.00},
+  {no:48,nama:"Deva Faudji Hikmatiyar",mat:46.67,bi:76.67},
+  {no:49,nama:"Adiani Zahra",mat:33.33,bi:56.67},
+  {no:50,nama:"Muhamad Afrizal",mat:43.33,bi:73.33},
+  {no:51,nama:"Nesta Ramdan Nugraha",mat:46.67,bi:63.33},
+  {no:52,nama:"Ainun Nurbaeti",mat:56.67,bi:90.00},
+  {no:53,nama:"Risma Kania Putri",mat:33.33,bi:63.33},
+  {no:54,nama:"Melinda Nur Aini",mat:33.33,bi:50.00},
+  {no:55,nama:"Kaka Nugraha",mat:33.33,bi:60.00},
+  {no:56,nama:"Mumun Muttakiyah",mat:30.00,bi:60.00},
+  {no:57,nama:"Muhamad Erlangga Adji Pangestu",mat:50.00,bi:46.67},
+  {no:58,nama:"Mumtaz Zahra",mat:36.67,bi:70.00},
+  {no:59,nama:"Faisal Efendi",mat:33.33,bi:56.67},
+  {no:60,nama:"Revani Nailah",mat:40.00,bi:50.00},
+  {no:61,nama:"Cindy Rahayu",mat:33.33,bi:80.00},
+  {no:62,nama:"Arif Rahmat Hakim",mat:30.00,bi:30.00},
+  {no:63,nama:"Herdyansah",mat:33.33,bi:33.33},
+  {no:64,nama:"Asya Nur Salsabila",mat:63.33,bi:60.00},
+  {no:65,nama:"Rangga Adhitya",mat:26.67,bi:30.00},
+  {no:66,nama:"Abi Ikhsan Yanuar",mat:40.00,bi:20.00},
+  {no:67,nama:"Sandrina Meita Kirana Yusup",mat:36.67,bi:66.67},
+  {no:68,nama:"Diky Mulyadi",mat:36.67,bi:43.33},
+  {no:69,nama:"Revina Nadirah",mat:33.33,bi:63.33},
+  {no:70,nama:"Siti Naila Rohmah",mat:63.33,bi:46.67},
+  {no:71,nama:"Ahmad Pauzi Ridwan",mat:36.67,bi:46.67},
+];
+
+function katMat(v){ return v>=56.67?'Baik':v>=33.33?'Memadai':'Kurang'; }
+function katBI(v){  return v>=73.33?'Baik':v>=46.67?'Memadai':'Kurang'; }
+
+const data = raw.map(d=>({
+  ...d,
+  avg: parseFloat(((d.mat+d.bi)/2).toFixed(2)),
+  katMat: katMat(d.mat),
+  katBI:  katBI(d.bi)
+}));
+
+const matVals = data.map(d=>d.mat);
+const biVals  = data.map(d=>d.bi);
+const avgMat  = matVals.reduce((a,b)=>a+b,0)/matVals.length;
+const avgBI   = biVals.reduce((a,b)=>a+b,0)/biVals.length;
+const matC = {Baik:0,Memadai:0,Kurang:0};
+const biC  = {Baik:0,Memadai:0,Kurang:0};
+data.forEach(d=>{ matC[d.katMat]++; biC[d.katBI]++; });
+
+/* ── METRICS ── */
+function renderMetrics(){
+  const g = document.getElementById('metrics-grid');
+  const cards = [
+    {accent:'linear-gradient(90deg,#1D6FE8,#38BDF8)',icon:'👥',bg:'rgba(29,111,232,0.08)',val:'71',label:'Total Peserta',sub:'Siswa kelas 9',delta:'',cls:''},
+    {accent:'linear-gradient(90deg,#1D6FE8,#6366F1)',icon:'📐',bg:'rgba(29,111,232,0.08)',val:avgMat.toFixed(1),label:'Rata-rata Matematika',sub:'Dari skala 100',delta:'Rendah',cls:'delta-warn'},
+    {accent:'linear-gradient(90deg,#0D9488,#22C55E)',icon:'📖',bg:'rgba(13,148,136,0.08)',val:avgBI.toFixed(1),label:'Rata-rata Bahasa Indonesia',sub:'Dari skala 100',delta:'Lebih baik',cls:'delta-good'},
+    {accent:'linear-gradient(90deg,#EAB308,#F59E0B)',icon:'🏅',val:'93.33',label:'Nilai BI Tertinggi',sub:'Tiara Anggraeni',delta:'',cls:''},
+    {accent:'linear-gradient(90deg,#8B5CF6,#EC4899)',icon:'⭐',val:'63.33',label:'Nilai Mat Tertinggi',sub:'4 siswa capai ini',delta:'',cls:''},
+    {accent:'linear-gradient(90deg,#0D9488,#06B6D4)',icon:'✅',bg:'rgba(13,148,136,0.08)',val:matC.Baik+matC.Memadai,label:'Tuntas Matematika',sub:`${Math.round(((matC.Baik+matC.Memadai)/71)*100)}% peserta`,delta:'Baik + Memadai',cls:'delta-info'},
+    {accent:'linear-gradient(90deg,#0D9488,#22C55E)',icon:'✅',val:biC.Baik+biC.Memadai,label:'Tuntas Bahasa Indonesia',sub:`${Math.round(((biC.Baik+biC.Memadai)/71)*100)}% peserta`,delta:'Baik + Memadai',cls:'delta-info'},
+    {accent:'linear-gradient(90deg,#EF4444,#F97316)',icon:'⚠️',val:matC.Kurang,label:'Kurang Matematika',sub:`${Math.round((matC.Kurang/71)*100)}% peserta`,delta:'Perlu intervensi',cls:'delta-warn'},
+  ];
+  g.innerHTML = cards.map(c=>`
+    <div class="metric-card">
+      <div class="metric-accent" style="background:${c.accent}"></div>
+      <div class="metric-icon" style="background:${c.bg||'rgba(148,163,184,0.10)'}">${c.icon}</div>
+      <div class="metric-value">${c.val}</div>
+      <div class="metric-label">${c.label}</div>
+      <div class="metric-sub">${c.sub}</div>
+      ${c.delta?`<div class="metric-delta ${c.cls}">${c.delta}</div>`:''}
+    </div>`).join('');
+}
+
+/* ── TOP PERFORMERS ── */
+function renderPerformers(){
+  const top = [...data].sort((a,b)=>b.avg-a.avg).slice(0,10);
+  const el = document.getElementById('performers-list');
+  el.innerHTML = top.map((d,i)=>{
+    const rankCls = i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    return `<div class="performer-row">
+      <span class="rank-num ${rankCls}">${i+1}</span>
+      <span class="performer-name">${d.nama}</span>
+      <div class="performer-scores">
+        <span class="score-pill sp-mat">Mat ${d.mat.toFixed(1)}</span>
+        <span class="score-pill sp-bi">BI ${d.bi.toFixed(1)}</span>
+        <span class="score-pill sp-avg">∅ ${d.avg.toFixed(1)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── SEARCH HELPERS ── */
+function highlight(text, q){
+  if(!q) return text;
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re,'<mark class="hl">$1</mark>');
+}
+
+/* ── AUTOCOMPLETE (panel search) ── */
+let acFocusIdx = -1;
+function onSearchInput(){
+  const q = document.getElementById('searchName').value.trim();
+  const clr = document.getElementById('searchClear');
+  clr.classList.toggle('visible', q.length > 0);
+  renderTable();
+  showAcDropdown(q);
+}
+function showAcDropdown(q){
+  const dd = document.getElementById('acDropdown');
+  if(!q){ dd.classList.remove('open'); acFocusIdx=-1; return; }
+  const matches = data.filter(d=>d.nama.toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  if(!matches.length){
+    dd.innerHTML=`<div class="ac-empty">Tidak ditemukan: "<strong>${q}</strong>"</div>`;
+    dd.classList.add('open'); return;
+  }
+  dd.innerHTML = matches.map((d,i)=>`
+    <div class="ac-item" data-idx="${i}" onmousedown="selectAcItem('${d.nama.replace(/'/g,"\\'")}')">
+      <span class="ac-no">${String(d.no).padStart(2,'0')}</span>
+      <span style="flex:1">${highlight(d.nama,q)}</span>
+      <div class="ac-item-scores">
+        <span class="score-pill sp-mat">${d.mat.toFixed(1)}</span>
+        <span class="score-pill sp-bi">${d.bi.toFixed(1)}</span>
+      </div>
+    </div>`).join('');
+  dd.classList.add('open');
+  acFocusIdx = -1;
+}
+function selectAcItem(nama){
+  document.getElementById('searchName').value = nama;
+  document.getElementById('searchClear').classList.add('visible');
+  document.getElementById('acDropdown').classList.remove('open');
+  renderTable();
+}
+function clearSearch(){
+  document.getElementById('searchName').value='';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.getElementById('acDropdown').classList.remove('open');
+  renderTable();
+}
+function searchKeydown(e){
+  const dd = document.getElementById('acDropdown');
+  const items = dd.querySelectorAll('.ac-item');
+  if(e.key==='ArrowDown'){ e.preventDefault(); acFocusIdx=Math.min(acFocusIdx+1,items.length-1); setAcFocus(items); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); acFocusIdx=Math.max(acFocusIdx-1,-1); setAcFocus(items); }
+  else if(e.key==='Enter' && acFocusIdx>=0){ items[acFocusIdx].dispatchEvent(new MouseEvent('mousedown')); }
+  else if(e.key==='Escape'){ dd.classList.remove('open'); acFocusIdx=-1; }
+}
+function setAcFocus(items){
+  items.forEach((el,i)=>el.classList.toggle('focused',i===acFocusIdx));
+  if(acFocusIdx>=0) items[acFocusIdx].scrollIntoView({block:'nearest'});
+}
+document.addEventListener('click', e=>{
+  if(!document.getElementById('searchWrap')?.contains(e.target))
+    document.getElementById('acDropdown')?.classList.remove('open');
+  if(!document.getElementById('topbarSearchWrap')?.contains(e.target))
+    document.getElementById('topbarAc')?.classList.remove('open');
+});
+
+/* ── TOPBAR GLOBAL SEARCH ── */
+let topbarAcIdx = -1;
+function topbarSearchHandler(){
+  const q = document.getElementById('topbarSearch').value.trim();
+  const ac = document.getElementById('topbarAc');
+  if(!q){ ac.classList.remove('open'); return; }
+  const matches = data.filter(d=>d.nama.toLowerCase().includes(q.toLowerCase())).slice(0,7);
+  if(!matches.length){
+    ac.innerHTML=`<div class="ac-empty" style="padding:14px;text-align:center;color:var(--text-muted);font-size:13px">Tidak ditemukan siswa "<strong>${q}</strong>"</div>`;
+    ac.classList.add('open'); return;
+  }
+  ac.innerHTML = `<div class="topbar-ac-header">Hasil pencarian — ${matches.length} siswa</div>`
+    + matches.map(d=>`
+    <div class="topbar-ac-item" onmousedown="selectTopbarAc('${d.nama.replace(/'/g,"\\'")}')">
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);min-width:22px">${String(d.no).padStart(2,'0')}</span>
+      <span style="flex:1;font-weight:500">${highlight(d.nama,q)}</span>
+      <div class="topbar-ac-scores">
+        <span class="tac-pill tac-mat">M ${d.mat.toFixed(1)}</span>
+        <span class="tac-pill tac-bi">B ${d.bi.toFixed(1)}</span>
+        <span class="badge badge-${d.katMat.toLowerCase()}">${d.katMat}</span>
+      </div>
+    </div>`).join('');
+  ac.classList.add('open');
+}
+function selectTopbarAc(nama){
+  document.getElementById('topbarSearch').value='';
+  document.getElementById('topbarAc').classList.remove('open');
+  const d = data.find(x=>x.nama===nama);
+  if(d) openDetail(d);
+}
+function topbarKeydown(e){
+  if(e.key==='Escape'){ document.getElementById('topbarAc').classList.remove('open'); }
+}
+
+/* ── STUDENT DETAIL MODAL ── */
+function openDetail(d){
+  const initials = d.nama.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('detailCard').innerHTML = `
+    <button class="detail-close" onclick="document.getElementById('detailOverlay').classList.remove('open')">✕</button>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div class="detail-avatar">${initials}</div>
+      <div>
+        <div class="detail-name">${d.nama}</div>
+        <div class="detail-sub">No. Peserta: ${String(d.no).padStart(2,'0')} · SMPN 2 Ganeas · 2026</div>
+      </div>
+    </div>
+    <div class="detail-scores">
+      <div class="detail-score-box">
+        <div class="detail-score-val" style="color:#1D6FE8">${d.mat.toFixed(2)}</div>
+        <div class="detail-score-lbl">Matematika</div>
+        <div style="margin-top:6px"><span class="badge badge-${d.katMat.toLowerCase()}">${d.katMat}</span></div>
+      </div>
+      <div class="detail-score-box">
+        <div class="detail-score-val" style="color:#0D9488">${d.bi.toFixed(2)}</div>
+        <div class="detail-score-lbl">Bhs. Indonesia</div>
+        <div style="margin-top:6px"><span class="badge badge-${d.katBI.toLowerCase()}">${d.katBI}</span></div>
+      </div>
+      <div class="detail-score-box">
+        <div class="detail-score-val" style="color:var(--navy)">${d.avg.toFixed(1)}</div>
+        <div class="detail-score-lbl">Rata-rata</div>
+        <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">dari 2 mapel</div>
+      </div>
+    </div>
+    <div class="detail-bar-row">
+      <div class="detail-bar-label"><span>Matematika</span><span style="color:#1D6FE8;font-family:'DM Mono',monospace">${d.mat.toFixed(2)}</span></div>
+      <div class="detail-bar-track"><div class="detail-bar-fill" style="width:${d.mat}%;background:#1D6FE8"></div></div>
+    </div>
+    <div class="detail-bar-row">
+      <div class="detail-bar-label"><span>Bahasa Indonesia</span><span style="color:#0D9488;font-family:'DM Mono',monospace">${d.bi.toFixed(2)}</span></div>
+      <div class="detail-bar-track"><div class="detail-bar-fill" style="width:${d.bi}%;background:#0D9488"></div></div>
+    </div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--gray100);font-size:12px;color:var(--text-muted);text-align:center">
+      Klik di luar kartu untuk menutup
+    </div>`;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail(e){
+  if(e.target===document.getElementById('detailOverlay'))
+    document.getElementById('detailOverlay').classList.remove('open');
+}
+
+/* ── RESET FILTERS ── */
+function resetAllFilters(){
+  document.getElementById('searchName').value='';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.getElementById('acDropdown').classList.remove('open');
+  document.getElementById('filterKatMat').value='';
+  document.getElementById('filterKatBI').value='';
+  document.getElementById('sortBy').value='no';
+  renderTable();
+}
+
+/* ── TABLE ── */
+function setSortBy(v){ document.getElementById('sortBy').value=v; renderTable(); }
+function renderTable(){
+  const q   = document.getElementById('searchName').value.trim();
+  const km  = document.getElementById('filterKatMat').value;
+  const kb  = document.getElementById('filterKatBI').value;
+  const srt = document.getElementById('sortBy').value;
+  let f = data.filter(d=>{
+    if(q && !d.nama.toLowerCase().includes(q.toLowerCase())) return false;
+    if(km && d.katMat!==km) return false;
+    if(kb && d.katBI!==kb)  return false;
+    return true;
+  });
+  if(srt==='nama')     f.sort((a,b)=>a.nama.localeCompare(b.nama));
+  else if(srt==='mat_desc') f.sort((a,b)=>b.mat-a.mat);
+  else if(srt==='mat_asc')  f.sort((a,b)=>a.mat-b.mat);
+  else if(srt==='bi_desc')  f.sort((a,b)=>b.bi-a.bi);
+  else if(srt==='bi_asc')   f.sort((a,b)=>a.bi-b.bi);
+  else if(srt==='avg_desc') f.sort((a,b)=>b.avg-a.avg);
+  else if(srt==='avg_asc')  f.sort((a,b)=>a.avg-b.avg);
+  else f.sort((a,b)=>a.no-b.no);
+
+  document.getElementById('filter-count').textContent = f.length+' siswa';
+  const tbody = document.getElementById('student-tbody');
+  const noData = document.getElementById('no-data');
+  if(!f.length){
+    tbody.innerHTML='';
+    document.getElementById('no-data-query').textContent = q||'filter ini';
+    noData.style.display='block'; return;
+  }
+  noData.style.display='none';
+
+  function scoreBar(v, color){
+    return `<div class="score-bar">
+      <span class="score-cell">${v.toFixed(2)}</span>
+      <div class="score-bar-track">
+        <div class="score-bar-fill" style="width:${v}%;background:${color}"></div>
+      </div>
+    </div>`;
+  }
+
+  tbody.innerHTML = f.map(d=>`<tr style="cursor:pointer" onclick="openDetail(data.find(x=>x.no===${d.no}))" title="Klik untuk detail">
+    <td><span class="no-cell">${String(d.no).padStart(2,'0')}</span></td>
+    <td class="name-cell">${highlight(d.nama, q)}</td>
+    <td>${scoreBar(d.mat,'#1D6FE8')}</td>
+    <td><span class="badge badge-${d.katMat.toLowerCase()}">${d.katMat}</span></td>
+    <td>${scoreBar(d.bi,'#0D9488')}</td>
+    <td><span class="badge badge-${d.katBI.toLowerCase()}">${d.katBI}</span></td>
+    <td class="avg-cell">${d.avg.toFixed(1)}</td>
+  </tr>`).join('');
+}
+
+/* ── INSIGHTS ── */
+function renderInsights(){
+  const ins = [
+    {cls:'danger',icon:'⚠️',iconBg:'rgba(239,68,68,0.12)',tag:'Temuan Kritis',tagColor:'#DC2626',title:'Matematika adalah titik lemah sistemik',body:`Rata-rata nilai Matematika hanya <strong>${avgMat.toFixed(1)}</strong> — jauh di bawah Bahasa Indonesia (${avgBI.toFixed(1)}). Sebanyak <strong>${matC.Kurang} siswa (${Math.round((matC.Kurang/71)*100)}%)</strong> berada di kategori Kurang, menunjukkan pola yang melampaui kemampuan individual.`},
+    {cls:'success',icon:'📈',iconBg:'rgba(13,148,136,0.12)',tag:'Kekuatan',tagColor:'#0F766E',title:'Bahasa Indonesia relatif lebih kuat',body:`Hanya <strong>${biC.Kurang} siswa (${Math.round((biC.Kurang/71)*100)}%)</strong> berkategori Kurang dalam Bahasa Indonesia. Kompetensi literasi ini bisa dijadikan jembatan untuk memperkuat penalaran Matematika melalui soal kontekstual berbahasa jelas.`},
+    {cls:'warning',icon:'🏆',iconBg:'rgba(245,158,11,0.12)',tag:'Top Performers',tagColor:'#92400E',title:'Siswa berprestasi perlu pengayaan',body:`Tiara Anggraeni (BI 93.33), Ainun Nurbaeti (BI 90.00), Syakira Khanza Aulia (Mat 60/BI 83.33), dan Najah Zahwa Ramadani (Mat 56.67/BI 83.33) adalah puncak prestasi. Mereka membutuhkan program pengayaan dan tantangan lebih agar potensi tidak stagnan.`},
+    {cls:'danger',icon:'🚨',iconBg:'rgba(239,68,68,0.12)',tag:'Intervensi Segera',tagColor:'#DC2626',title:'Siswa berisiko tinggi perlu remedial',body:`Reza Maulana Yusuf (Mat 16.67), Riski Hermawan (Mat 20.00), Doni Yudiansyah (Mat 23.33/BI 30), Arif Rahmat Hakim (Mat 30/BI 30), dan Rangga Adhitya (Mat 26.67/BI 30) memerlukan program remedial intensif dan pendampingan personal segera.`},
+    {cls:'info',icon:'🔄',iconBg:'rgba(29,111,232,0.12)',tag:'Pola Unik',tagColor:'#1D4ED8',title:'Asimetri nilai antar mata pelajaran',body:`Banyak siswa memiliki nilai tinggi di satu mapel namun rendah di mapel lain. Contoh: Radit Andita (Mat 63.33/BI 33.33) dan Abi Ikhsan Yanuar (Mat 40/BI 20). Ini mengindikasikan perbedaan gaya belajar yang perlu diakomodasi melalui pendekatan diferensiasi.`},
+    {cls:'purple',icon:'📊',iconBg:'rgba(139,92,246,0.12)',tag:'Prediksi',tagColor:'#6D28D9',title:'Proyeksi ketuntasan periode berikutnya',body:`Jika program remedial berhasil mengangkat <strong>${matC.Kurang}</strong> siswa Kurang Matematika dan <strong>${biC.Kurang}</strong> siswa Kurang BI menjadi minimal Memadai, tingkat ketuntasan Matematika dapat meningkat dari <strong>${Math.round(((matC.Baik+matC.Memadai)/71)*100)}%</strong> menjadi <strong>100%</strong>.`},
+    {cls:'info full',icon:'🏫',iconBg:'rgba(6,182,212,0.12)',tag:'Rekomendasi Sekolah',tagColor:'#0E7490',title:'Strategi aksi untuk guru dan manajemen sekolah',body:`<strong>1. Peer-tutoring</strong> — Pasangkan siswa unggul BI (Tiara, Ainun, Desy) dengan siswa lemah Matematika untuk sesi belajar bersama terjadwal. <strong>2. Revisi metode ajar Matematika</strong> — Nilai rendah merata menunjukkan perlu pendekatan kontekstual, project-based learning, dan soal cerita yang relevan. <strong>3. Kelas remedial terstruktur</strong> — Prioritaskan 18 siswa Kurang Matematika dengan sesi tambahan 2x seminggu. <strong>4. Monitoring berkala</strong> — Buat sistem tracking nilai bulanan agar perkembangan dapat dipantau secara real-time.`},
+  ];
+  document.getElementById('insight-grid').innerHTML = ins.map(c=>`
+    <div class="insight-card ${c.cls}">
+      <div class="insight-header">
+        <div class="insight-icon-wrap" style="background:${c.iconBg}">${c.icon}</div>
+        <div>
+          <div class="insight-tag" style="color:${c.tagColor}">${c.tag}</div>
+          <div class="insight-title">${c.title}</div>
+        </div>
+      </div>
+      <div class="insight-body">${c.body}</div>
+    </div>`).join('');
+}
+
+/* ── PANEL SWITCHING ── */
+function switchPanel(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+/* ── CHARTS ── */
+function initCharts(){
+  const top10 = [...data].sort((a,b)=>b.avg-a.avg).slice(0,10);
+
+  new Chart(document.getElementById('chartMatDist'),{
+    type:'doughnut',
+    data:{labels:['Baik','Memadai','Kurang'],datasets:[{data:[matC.Baik,matC.Memadai,matC.Kurang],backgroundColor:['#0D9488','#1D6FE8','#EF4444'],borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} siswa (${Math.round(ctx.raw/71*100)}%)`}}}}
+  });
+  new Chart(document.getElementById('chartBIDist'),{
+    type:'doughnut',
+    data:{labels:['Baik','Memadai','Kurang'],datasets:[{data:[biC.Baik,biC.Memadai,biC.Kurang],backgroundColor:['#0D9488','#1D6FE8','#EF4444'],borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} siswa (${Math.round(ctx.raw/71*100)}%)`}}}}
+  });
+  new Chart(document.getElementById('chartTop10'),{
+    type:'bar',
+    data:{labels:top10.map(d=>d.nama.split(' ').slice(0,2).join(' ')),datasets:[
+      {label:'Matematika',data:top10.map(d=>d.mat),backgroundColor:'rgba(29,111,232,0.85)',borderRadius:5},
+      {label:'Bahasa Indonesia',data:top10.map(d=>d.bi),backgroundColor:'rgba(13,148,136,0.85)',borderRadius:5}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11},autoSkip:false,maxRotation:30}},y:{min:0,max:100,grid:{color:'rgba(0,0,0,0.05)'}}}}
+  });
+  new Chart(document.getElementById('chartCompare'),{
+    type:'line',
+    data:{labels:data.map(d=>d.no),datasets:[
+      {label:'Matematika',data:data.map(d=>d.mat),borderColor:'#1D6FE8',backgroundColor:'rgba(29,111,232,0.06)',fill:true,pointRadius:2,tension:0.35,borderWidth:2},
+      {label:'Bahasa Indonesia',data:data.map(d=>d.bi),borderColor:'#0D9488',backgroundColor:'transparent',pointRadius:2,tension:0.35,borderWidth:2,borderDash:[6,3]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'No. Peserta',font:{size:11}},grid:{display:false}},y:{min:0,max:100,grid:{color:'rgba(0,0,0,0.05)'}}}}
+  });
+  new Chart(document.getElementById('chartScatter'),{
+    type:'scatter',
+    data:{datasets:[{label:'Siswa',data:data.map(d=>({x:d.mat,y:d.bi})),backgroundColor:'rgba(139,92,246,0.55)',pointRadius:5,pointHoverRadius:7}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'Matematika'},min:0,max:100,grid:{color:'rgba(0,0,0,0.05)'}},y:{title:{display:true,text:'Bahasa Indonesia'},min:0,max:100,grid:{color:'rgba(0,0,0,0.05)'}}}}
+  });
+  new Chart(document.getElementById('chartRadar'),{
+    type:'radar',
+    data:{labels:['Rata-rata','Nilai Max','Nilai Min','% Baik','% Memadai','% Kurang'],
+      datasets:[
+        {label:'Matematika',data:[avgMat,Math.max(...matVals),Math.min(...matVals),matC.Baik/71*100,(matC.Memadai)/71*100,matC.Kurang/71*100],backgroundColor:'rgba(29,111,232,0.15)',borderColor:'#1D6FE8',pointBackgroundColor:'#1D6FE8',borderWidth:2},
+        {label:'Bahasa Indonesia',data:[avgBI,Math.max(...biVals),Math.min(...biVals),biC.Baik/71*100,(biC.Memadai)/71*100,biC.Kurang/71*100],backgroundColor:'rgba(13,148,136,0.15)',borderColor:'#0D9488',pointBackgroundColor:'#0D9488',borderWidth:2}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{r:{min:0,max:100,grid:{color:'rgba(0,0,0,0.07)'},ticks:{font:{size:9},backdropColor:'transparent'}}}}
+  });
+  function histData(vals){
+    return [[0,20],[20,40],[40,60],[60,80],[80,100]].map(([lo,hi])=>vals.filter(v=>v>=lo&&v<hi).length);
+  }
+  const hLabels=['0–19','20–39','40–59','60–79','80–100'];
+  new Chart(document.getElementById('chartHistMat'),{
+    type:'bar',
+    data:{labels:hLabels,datasets:[{label:'Siswa',data:histData(matVals),backgroundColor:'rgba(29,111,232,0.80)',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+  });
+  new Chart(document.getElementById('chartHistBI'),{
+    type:'bar',
+    data:{labels:hLabels,datasets:[{label:'Siswa',data:histData(biVals),backgroundColor:'rgba(13,148,136,0.80)',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+  });
+}
+
+renderMetrics();
+renderPerformers();
+renderTable();
+renderInsights();
+initCharts();
+</script>
+</body>
+</html>
